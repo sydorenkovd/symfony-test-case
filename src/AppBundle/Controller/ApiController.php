@@ -9,6 +9,7 @@
 namespace AppBundle\Controller;
 
 
+use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,53 +24,27 @@ class ApiController extends Controller
      * @Route("/api", name="api")
      */
     public function indexAction(Request $request) {
-        $error = '';
-        $responseStatus = true;
-        $code = 200;
+        $apiHelper = $this->get('app.api_helper');
         try {
             $em = $this->getDoctrine()->getManager();
             $dataRequest = json_decode($request->getContent(), true);
-            if($this->checkDataRequest($dataRequest)) {
+            if($apiHelper->checkDataRequestKeys($dataRequest)) {
                 $status = is_array($dataRequest['status']) ? (int)$dataRequest['status'][$dataRequest['id']] : (int)$dataRequest['status'];
                 $model = $em->getRepository('AppBundle:Book')->find($dataRequest['id']);
-                if($this->checkStatusCompatibility((int)$status, (int)$model->getStatus())) {
+                if($apiHelper->checkStatusCompatibility((int)$status, (int)$model->getStatus())) {
                     $model->setBookStatus($em->getRepository('AppBundle:BookStatus')->find($status));
                     $em->persist($model);
                     $em->flush();
                 } else {
-                    $responseStatus = false;
-                    $error = 'Нельзя изменить статус';
-                    $code = 500;
+                    return $apiHelper->responseError('Нельзя изменить статус', 424);
                 }
             } else {
-                $error = 'Ошибка';
+                return $apiHelper->responseError('Ошибка', 400);
             }
         } catch (\Exception $e) {
-            $error = $e->getMessage();
+            return $apiHelper->responseError($e->getMessage(), 500);
         }
-        return new JsonResponse(['status' => $responseStatus, 'error' => $error], $code);
+        return new JsonResponse(['status' => true, 'error' => null], 200);
     }
 
-    private function checkStatusCompatibility(int $statusRequest, int $statusModel) : bool {
-        if($statusRequest === $statusModel) {
-            return false;
-        } else {
-            try {
-                $allowedStatusArr = json_decode(
-                    $this->getDoctrine()->getRepository('Model:BookCompatibleStatus')
-                        ->findBy(['status' => $statusModel])[0]->getAllowedStatuses()
-                );
-                return in_array($statusRequest, $allowedStatusArr);
-            } catch (\Exception $e) {
-                // log error TaskManager::logError($e->getMessage(), ...)
-                return false;
-            }
-        }
-    }
-    private function checkDataRequest(array $dataRequest) : bool {
-        if(array_key_exists('id', $dataRequest) &&  array_key_exists('status', $dataRequest)) {
-            return true;
-        }
-        return false;
-    }
 }

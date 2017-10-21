@@ -10,4 +10,15 @@ namespace AppBundle\Repository;
  */
 class BookStatusRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getOptions()
+    {
+        $options = [];
+        foreach ($this->createQueryBuilder('c')
+                     ->select('c.statusName, c.id')
+                     ->getQuery()
+                     ->getResult() as $item) {
+            $options[$item['statusName']] = $item['id'];
+        }
+        return $options;
+    }
 }
