@@ -1,8 +1,9 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <div class="container" ng-controller="AppContent">
-        <div class="row">
+    <div class="container" ng-app="App">
+        <div class="row" ng-controller="AppContent">
             <div class="col-xs-12">
+                <a class="btn btn-flat btn-success pull-right" href="/add">Добавить книгу</a>
                 <table class="table">
                     <thead>
                     <tr>
@@ -21,7 +22,7 @@
                         <td>{{ book.authors }}</td>
                         <td>{{ book.bookStatus.statusName }}</td>
                         <td>
-                            <select id="bookStatus" class="" ng-model="$formGet.bookStatus" ng-init="$formGet.bookStatus = {{ book.status }}" value="{{ book.status }}">
+                            <select id="bookStatus" class="" ng-model="$formGet.bookStatus[{{ loop.index }}]" ng-init="$formGet.bookStatus[{{ loop.index }}] = '{{ book.status }}'" value="{{ book.status }}">
                                 {% for status in statuses %}
                                         <option {% if book.status == status.id %} selected {% endif %} value="{{ status.id }}">{{ status.statusName }}</option>
                                 {% endfor %}

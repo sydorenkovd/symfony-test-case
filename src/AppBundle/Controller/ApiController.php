@@ -30,9 +30,10 @@ class ApiController extends Controller
             $em = $this->getDoctrine()->getManager();
             $dataRequest = json_decode($request->getContent(), true);
             if($this->checkDataRequest($dataRequest)) {
+                $status = is_array($dataRequest['status']) ? (int)$dataRequest['status'][$dataRequest['id']] : (int)$dataRequest['status'];
                 $model = $em->getRepository('AppBundle:Book')->find($dataRequest['id']);
-                if($this->checkStatusCompatibility((int)$dataRequest['status'], (int)$model->getStatus())) {
-                    $model->setBookStatus($em->getRepository('AppBundle:BookStatus')->find($dataRequest['status']));
+                if($this->checkStatusCompatibility((int)$status, (int)$model->getStatus())) {
+                    $model->setBookStatus($em->getRepository('AppBundle:BookStatus')->find($status));
                     $em->persist($model);
                     $em->flush();
                 } else {

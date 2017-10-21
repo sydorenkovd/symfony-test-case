@@ -3,7 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Book
  *
@@ -67,7 +67,7 @@ class Book
 
     /**
      * @var int
-     *
+     * @Assert\Type("integer")
      * @ORM\Column(name="year", type="integer")
      */
     private $year;
