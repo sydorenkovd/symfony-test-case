@@ -9,6 +9,7 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Service\ApiHelper;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -24,7 +25,7 @@ class ApiController extends Controller
      * @Route("/api", name="api")
      */
     public function indexAction(Request $request) {
-        $apiHelper = $this->get('app.api_helper');
+        $apiHelper = $this->get(ApiHelper::class);
         try {
             $em = $this->getDoctrine()->getManager();
             $dataRequest = json_decode($request->getContent(), true);
