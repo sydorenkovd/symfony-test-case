@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container" ng-controller="AppContent">
+        <div class="row">
+            <div class="col-xs-12">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Название книги</th>
+                        <th>Год выпуска</th>
+                        <th>Авторы</th>
+                        <th>Статус</th>
+                        <th>Изменить статус</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.year }}</td>
+                        <td>{{ book.authors }}</td>
+                        <td>{{ book.bookStatus.statusName }}</td>
+                        <td>
+                            <select id="bookStatus" class="" ng-model="$formGet.bookStatus" ng-init="$formGet.bookStatus = {{ book.status }}" value="{{ book.status }}">
+                                {% for status in statuses %}
+                                        <option {% if book.status == status.id %} selected {% endif %} value="{{ status.id }}">{{ status.statusName }}</option>
+                                {% endfor %}
+                            </select>
+                            <button class="btn btn-flat btn-primary" ng-click="changeStatus({{ book.id }})">Изменить</button>
+                        </td>
+                    </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
