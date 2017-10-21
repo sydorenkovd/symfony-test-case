@@ -31,7 +31,7 @@ class ApiController extends Controller
             $dataRequest = json_decode($request->getContent(), true);
             if($this->checkDataRequest($dataRequest)) {
                 $model = $em->getRepository('AppBundle:Book')->find($dataRequest['id']);
-                if($this->checkStatusCompatibility($dataRequest['status'], $model->getStatus())) {
+                if($this->checkStatusCompatibility((int)$dataRequest['status'], (int)$model->getStatus())) {
                     $model->setBookStatus($em->getRepository('AppBundle:BookStatus')->find($dataRequest['status']));
                     $em->persist($model);
                     $em->flush();
@@ -49,7 +49,7 @@ class ApiController extends Controller
         return new JsonResponse(['status' => $responseStatus, 'error' => $error], $code);
     }
 
-    private function checkStatusCompatibility($statusRequest, $statusModel) {
+    private function checkStatusCompatibility(int $statusRequest, int $statusModel) : bool {
         if($statusRequest === $statusModel) {
             return false;
         } else {
@@ -65,7 +65,7 @@ class ApiController extends Controller
             }
         }
     }
-    private function checkDataRequest($dataRequest) {
+    private function checkDataRequest(array $dataRequest) : bool {
         if(array_key_exists('id', $dataRequest) &&  array_key_exists('status', $dataRequest)) {
             return true;
         }
