@@ -31,10 +31,10 @@ class ApiController extends Controller
             $dataRequest = json_decode($request->getContent(), true);
             if($apiHelper->checkDataRequestKeys($dataRequest)) {
                 $status = is_array($dataRequest['status']) ? (int)$dataRequest['status'][$dataRequest['id']] : (int)$dataRequest['status'];
-                $model = $em->getRepository('AppBundle:Book')->find($dataRequest['id']);
-                if($apiHelper->checkStatusCompatibility((int)$status, (int)$model->getStatus())) {
-                    $model->setBookStatus($em->getRepository('AppBundle:BookStatus')->find($status));
-                    $em->persist($model);
+                $book = $em->getRepository('AppBundle:Book')->find($dataRequest['id']);
+                if($apiHelper->checkStatusCompatibility((int)$status, (int)$book->getStatus())) {
+                    $book->setBookStatus($em->getRepository('AppBundle:BookStatus')->find($status));
+                    $em->persist($book);
                     $em->flush();
                 } else {
                     return $apiHelper->responseError('Нельзя изменить статус', 424);
