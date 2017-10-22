@@ -21,11 +21,11 @@ class ApiController extends Controller
 {
     /**
      * @param Request $request
+     * @param ApiHelper $apiHelper
      * @return Response
      * @Route("/api", name="api")
      */
-    public function indexAction(Request $request) {
-        $apiHelper = $this->get(ApiHelper::class);
+    public function indexAction(Request $request, ApiHelper $apiHelper) {
         try {
             $em = $this->getDoctrine()->getManager();
             $dataRequest = json_decode($request->getContent(), true);

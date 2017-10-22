@@ -30,7 +30,7 @@ services:
         tags: ['controller.service_arguments']
 
     # add more services, or override services that need manual wiring
-    AppBundle\Service\ApiHelper:
-         public: true
-         arguments:
-            $entityManager: '@doctrine.orm.entity_manager'
+    AppBundle\Service\:
+            resource: '../../src/AppBundle/Service'
+            public: true
+            tags: []
